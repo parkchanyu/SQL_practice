@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:31495';
+
 interface Table {
   Tables_in_sql_practice: string;
 }
@@ -34,7 +36,7 @@ const QueryPracticePage: React.FC = () => {
 
   const fetchTables = async () => {
     try {
-      const response = await fetch('http://localhost:31495/api/databases/tables');
+      const response = await fetch(`${API_URL}/api/databases/tables`);
       if (response.ok) {
         const data = await response.json();
         setTables(data);
@@ -46,7 +48,7 @@ const QueryPracticePage: React.FC = () => {
 
   const fetchTableStructure = async (tableName: string) => {
     try {
-      const response = await fetch(`http://localhost:31495/api/databases/tables/${tableName}/structure`);
+      const response = await fetch(`${API_URL}/api/databases/tables/${tableName}/structure`);
       if (response.ok) {
         const data = await response.json();
         setTableStructures(prev => ({
@@ -61,7 +63,7 @@ const QueryPracticePage: React.FC = () => {
 
   const fetchTableData = async (tableName: string) => {
     try {
-      const response = await fetch(`http://localhost:31495/api/databases/tables/${tableName}/data`);
+      const response = await fetch(`${API_URL}/api/databases/tables/${tableName}/data`);
       if (response.ok) {
         const data = await response.json();
         setTableData(prev => ({
@@ -93,7 +95,7 @@ const QueryPracticePage: React.FC = () => {
     
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:31495/api/databases/query', {
+      const response = await fetch(`${API_URL}/api/databases/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

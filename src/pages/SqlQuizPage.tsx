@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:31495';
 
 interface Column {
   name: string;
@@ -32,37 +35,33 @@ const SqlQuizPage: React.FC = () => {
 
   const fetchTables = async () => {
     try {
-      setIsLoading(true);
-      const response = await axios.get('http://localhost:31495/api/tables');
-      const tablesData = response.data.map((tableName: string) => ({
-        name: tableName,
-        columns: [] // 컬럼 정보는 별도로 가져올 예정
-      }));
-
-      // 각 테이블의 컬럼 정보 가져오기
-      for (let table of tablesData) {
-        const structureResponse = await axios.get(`http://localhost:31495/api/tables/${table.name}/structure`);
-        table.columns = structureResponse.data.map((col: any) => ({
-          name: col.Field,
-          type: col.Type
-        }));
-      }
-
-      setTables(tablesData);
-      generateQuiz(tablesData);
+      const response = await axios.get(`${API_URL}/api/tables`);
+      const tables = response.data;
+      
+      // 각 테이블의 구조 정보 가져오기
+      const tablesWithStructure = await Promise.all(
+        tables.map(async (table: any) => {
+          const structureResponse = await axios.get(`${API_URL}/api/tables/${table.name}/structure`);
+          return {
+            ...table,
+            columns: structureResponse.data
+          };
+        })
+      );
+      
+      setTables(tablesWithStructure);
     } catch (error) {
-      console.error('테이블 정보 가져오기 실패:', error);
-      setError('테이블 정보를 가져오는데 실패했습니다.');
-    } finally {
-      setIsLoading(false);
+      console.error('테이블 정보 조회 실패:', error);
     }
   };
 
-  const generateQuiz = async (tablesData: Table[]) => {
+  const generateQuiz = async () => {
+    if (tables.length === 0) return;
+    
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const response = await axios.post('http://localhost:31495/api/generate-quiz', {
-        tables: tablesData
+      const response = await axios.post(`${API_URL}/api/generate-quiz`, {
+        tables: tables
       });
       setCurrentQuestion(response.data);
     } catch (error) {
@@ -73,12 +72,12 @@ const SqlQuizPage: React.FC = () => {
     }
   };
 
-  const handleExecute = async () => {
-    if (!currentQuestion) return;
-
+  const executeQuery = async () => {
+    if (!userQuery) return;
+    
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const response = await axios.post('http://localhost:31495/api/execute-query', {
+      const response = await axios.post(`${API_URL}/api/execute-query`, {
         query: userQuery
       });
       setQueryResult(response.data);
@@ -134,7 +133,7 @@ const SqlQuizPage: React.FC = () => {
                 placeholder="SQL 쿼리를 입력하세요..."
               />
               <div className="button-group">
-                <button onClick={handleExecute}>실행</button>
+                <button onClick={executeQuery}>실행</button>
                 <button onClick={() => setUserQuery(currentQuestion.answer)}>정답 보기</button>
                 <button onClick={() => alert(currentQuestion.hint)}>힌트 보기</button>
               </div>
