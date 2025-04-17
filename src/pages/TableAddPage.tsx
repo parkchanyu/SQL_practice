@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:31495';
 
@@ -72,8 +72,8 @@ const TableAddPage: React.FC = () => {
       }
     } catch (error) {
       console.error('Error creating table:', error);
-      if (error.response) {
-        alert(error.response.data.error || '테이블 생성에 실패했습니다.');
+      if (axios.isAxiosError(error)) {
+        alert(error.response?.data?.error || '테이블 생성에 실패했습니다.');
       } else {
         alert('테이블 생성에 실패했습니다.');
       }

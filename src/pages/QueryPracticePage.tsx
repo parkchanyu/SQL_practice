@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:31495';
 
@@ -24,7 +24,7 @@ interface TableData {
 const QueryPracticePage: React.FC = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
-  const [result, setResult] = useState<any[]>([]);
+  const [result, setResult] = useState<any[] | null>(null);
   const [tables, setTables] = useState<Table[]>([]);
   const [selectedTables, setSelectedTables] = useState<string[]>([]);
   const [tableStructures, setTableStructures] = useState<Record<string, TableStructure[]>>({});
@@ -96,8 +96,8 @@ const QueryPracticePage: React.FC = () => {
       setError(null);
     } catch (error) {
       console.error('Error executing query:', error);
-      if (error.response) {
-        setError(error.response.data.error);
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data?.error || 'An error occurred while executing the query');
       } else {
         setError('An error occurred while executing the query');
       }
