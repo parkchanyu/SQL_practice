@@ -35,13 +35,13 @@ const SqlQuizPage: React.FC = () => {
 
   const fetchTables = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/tables`);
+      const response = await axios.get(`${API_URL}/api/tables`, { withCredentials: true });
       const tables = response.data;
       
       // 각 테이블의 구조 정보 가져오기
       const tablesWithStructure = await Promise.all(
         tables.map(async (table: any) => {
-          const structureResponse = await axios.get(`${API_URL}/api/tables/${table.name}/structure`);
+          const structureResponse = await axios.get(`${API_URL}/api/tables/${table.name}/structure`, { withCredentials: true });
           return {
             ...table,
             columns: structureResponse.data
@@ -51,7 +51,7 @@ const SqlQuizPage: React.FC = () => {
       
       setTables(tablesWithStructure);
     } catch (error) {
-      console.error('테이블 정보 조회 실패:', error);
+      console.error('Error fetching tables:', error);
     }
   };
 
@@ -62,10 +62,10 @@ const SqlQuizPage: React.FC = () => {
     try {
       const response = await axios.post(`${API_URL}/api/generate-quiz`, {
         tables: tables
-      });
+      }, { withCredentials: true });
       setCurrentQuestion(response.data);
     } catch (error) {
-      console.error('퀴즈 생성 실패:', error);
+      console.error('Error generating quiz:', error);
       setError('퀴즈 생성에 실패했습니다.');
     } finally {
       setIsLoading(false);
@@ -79,7 +79,7 @@ const SqlQuizPage: React.FC = () => {
     try {
       const response = await axios.post(`${API_URL}/api/execute-query`, {
         query: userQuery
-      });
+      }, { withCredentials: true });
       setQueryResult(response.data);
       setError(null);
     } catch (error: any) {

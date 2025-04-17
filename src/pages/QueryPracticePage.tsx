@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:31495';
 
@@ -29,6 +30,7 @@ const QueryPracticePage: React.FC = () => {
   const [tableStructures, setTableStructures] = useState<Record<string, TableStructure[]>>({});
   const [tableData, setTableData] = useState<TableData>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchTables();
@@ -36,43 +38,34 @@ const QueryPracticePage: React.FC = () => {
 
   const fetchTables = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/databases/tables`);
-      if (response.ok) {
-        const data = await response.json();
-        setTables(data);
-      }
+      const response = await axios.get(`${API_URL}/api/databases/tables`, { withCredentials: true });
+      setTables(response.data);
     } catch (error) {
-      console.error('테이블 목록 조회 실패:', error);
+      console.error('Error fetching tables:', error);
     }
   };
 
   const fetchTableStructure = async (tableName: string) => {
     try {
-      const response = await fetch(`${API_URL}/api/databases/tables/${tableName}/structure`);
-      if (response.ok) {
-        const data = await response.json();
-        setTableStructures(prev => ({
-          ...prev,
-          [tableName]: data
-        }));
-      }
+      const response = await axios.get(`${API_URL}/api/databases/tables/${tableName}/structure`, { withCredentials: true });
+      setTableStructures(prev => ({
+        ...prev,
+        [tableName]: response.data
+      }));
     } catch (error) {
-      console.error('테이블 구조 조회 실패:', error);
+      console.error('Error fetching table structure:', error);
     }
   };
 
   const fetchTableData = async (tableName: string) => {
     try {
-      const response = await fetch(`${API_URL}/api/databases/tables/${tableName}/data`);
-      if (response.ok) {
-        const data = await response.json();
-        setTableData(prev => ({
-          ...prev,
-          [tableName]: data
-        }));
-      }
+      const response = await axios.get(`${API_URL}/api/databases/tables/${tableName}/data`, { withCredentials: true });
+      setTableData(prev => ({
+        ...prev,
+        [tableName]: response.data
+      }));
     } catch (error) {
-      console.error('테이블 데이터 조회 실패:', error);
+      console.error('Error fetching table data:', error);
     }
   };
 
@@ -95,24 +88,20 @@ const QueryPracticePage: React.FC = () => {
     
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/databases/query`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query }),
-      });
+      const response = await axios.post(`${API_URL}/api/databases/query`, {
+        query: query
+      }, { withCredentials: true });
       
-      if (response.ok) {
-        const data = await response.json();
-        setResult(data);
-      } else {
-        const error = await response.json();
-        alert(error.error || '쿼리 실행에 실패했습니다');
-      }
+      setResult(response.data);
+      setError(null);
     } catch (error) {
-      console.error('쿼리 실행 실패:', error);
-      alert('쿼리 실행에 실패했습니다');
+      console.error('Error executing query:', error);
+      if (error.response) {
+        setError(error.response.data.error);
+      } else {
+        setError('An error occurred while executing the query');
+      }
+      setResult(null);
     } finally {
       setIsLoading(false);
     }
@@ -235,7 +224,7 @@ const QueryPracticePage: React.FC = () => {
         </button>
       </div>
 
-      {result.length > 0 && (
+      {result && (
         <div className="result-section">
           <h3>실행 결과</h3>
           <table>
@@ -256,6 +245,13 @@ const QueryPracticePage: React.FC = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {error && (
+        <div className="error-section">
+          <h3>에러 발생</h3>
+          <p>{error}</p>
         </div>
       )}
     </div>

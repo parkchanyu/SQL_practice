@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:31495';
 
@@ -16,6 +17,7 @@ const TableAddPage: React.FC = () => {
   const [columns, setColumns] = useState<Column[]>([
     { name: '', type: 'VARCHAR(255)', nullable: true, primary: false }
   ]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleBack = () => {
     navigate(-1);
@@ -56,24 +58,27 @@ const TableAddPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+
     try {
-      const response = await fetch(`${API_URL}/api/databases/tables`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: tableName,
-          columns: columns,
-        }),
-      });
-      if (response.ok) {
-        alert('테이블이 생성되었습니다');
-        navigate('/');
+      const response = await axios.post(`${API_URL}/api/databases/tables`, {
+        tableName,
+        columns,
+      }, { withCredentials: true });
+
+      if (response.status === 201) {
+        alert('테이블이 성공적으로 생성되었습니다.');
+        navigate('/query-practice');
       }
     } catch (error) {
-      console.error('테이블 생성 실패:', error);
-      alert('테이블 생성에 실패했습니다');
+      console.error('Error creating table:', error);
+      if (error.response) {
+        alert(error.response.data.error || '테이블 생성에 실패했습니다.');
+      } else {
+        alert('테이블 생성에 실패했습니다.');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -152,7 +157,7 @@ const TableAddPage: React.FC = () => {
             + 컬럼 추가
           </button>
         </div>
-        <button type="submit" className="submit-button">테이블 생성</button>
+        <button type="submit" className="submit-button" disabled={isLoading}>테이블 생성</button>
       </form>
     </div>
   );
