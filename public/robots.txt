@@ -1,3 +1,29 @@
 # https://www.robotstxt.org/robotstxt.html
+# 모든 검색 엔진 크롤러에 대한 규칙
 User-agent: *
-Disallow:
+Allow: /
+
+# 사이트맵 위치
+Sitemap: https://nexus.ai.kr/sitemap.xml
+
+# 크롤링 제외할 경로들
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+Disallow: /*?*  # 쿼리 파라미터가 있는 URL 제외
+
+# 특정 검색엔진에 대한 추가 규칙
+User-agent: Googlebot
+Crawl-delay: 1
+
+User-agent: Yeti
+Crawl-delay: 1
+
+# 이미지 크롤링 허용
+User-agent: Googlebot-Image
+Allow: /images/
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.gif$
+Allow: /*.png$
+Allow: /*.svg$

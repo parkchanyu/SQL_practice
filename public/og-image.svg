@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="630" version="1.1" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#ffffff"/>
+  <g transform="matrix(0.8,0,0,0.8,120,63)">
+    <path d="M256 64C141.1 64 48 157.1 48 272v128c0 26.5 21.5 48 48 48h320c26.5 0 48-21.5 48-48V272c0-114.9-93.1-208-208-208zm-48 160c17.7 0 32 14.3 32 32s-14.3 32-32 32-32-14.3-32-32 14.3-32 32-32zm96 0c17.7 0 32 14.3 32 32s-14.3 32-32 32-32-14.3-32-32 14.3-32 32-32z" fill="#0ea300"/>
+  </g>
+  <text x="600" y="315" text-anchor="middle" font-family="Arial" font-size="72" font-weight="bold" fill="#0ea300">
+    Nexus SQL Practice
+  </text>
+  <text x="600" y="395" text-anchor="middle" font-family="Arial" font-size="36" fill="#666666">
+    SQL을 쉽고 재미있게 배우는 학습 플랫폼
+  </text>
+</svg> 
