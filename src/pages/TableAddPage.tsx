@@ -55,7 +55,7 @@ const TableAddPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:31495/api/tables', {
+      const response = await fetch('http://localhost:31495/api/databases/tables', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
