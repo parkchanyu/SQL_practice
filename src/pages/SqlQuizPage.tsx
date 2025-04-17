@@ -131,8 +131,9 @@ const SqlQuizPage: React.FC = () => {
                 value={userQuery}
                 onChange={(e) => setUserQuery(e.target.value)}
                 placeholder="SQL 쿼리를 입력하세요..."
+                rows={5}
               />
-              <div className="button-group">
+              <div className="button-container">
                 <button onClick={executeQuery}>실행</button>
                 <button onClick={() => setUserQuery(currentQuestion.answer)}>정답 보기</button>
                 <button onClick={() => alert(currentQuestion.hint)}>힌트 보기</button>
