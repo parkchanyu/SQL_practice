@@ -40,7 +40,7 @@ const HomePage: React.FC = () => {
       </main>
       <footer className="footer">
         <p>Present by</p>
-        <img src="/nexus-logo.svg" alt="Nexus Logo" className="nexus-logo" />
+        <img src="/NEXUS2.png" alt="Nexus Logo" className="nexus-logo" />
       </footer>
     </div>
   );

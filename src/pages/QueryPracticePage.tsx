@@ -215,13 +215,15 @@ const QueryPracticePage: React.FC = () => {
           placeholder="SQL 쿼리를 입력하세요"
           rows={5}
         />
-        <button
-          className="execute-button"
-          onClick={handleExecute}
-          disabled={isLoading}
-        >
-          {isLoading ? '실행 중...' : '쿼리 실행'}
-        </button>
+        <div className="button-container">
+          <button
+            className="execute-button"
+            onClick={handleExecute}
+            disabled={isLoading}
+          >
+            {isLoading ? '실행 중...' : '쿼리 실행'}
+          </button>
+        </div>
       </div>
 
       {result && (
